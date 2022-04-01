@@ -1,0 +1,51 @@
+@startuml sbd ej3
+class proveedores{
+    +nro.proveedor
+    -nom.proveedor
+}
+
+class componentes{
+    +nro.componente
+    -nom.componente
+    -nro.proveedor
+    -stock 
+
+}
+
+
+class armado{
+    +nro.producto
+    +nro.componente
+    -cantidad 
+}
+
+class producto{
+    +nro.producto
+    -nom.producto
+    -stock
+}
+
+class clientes{
+    +nro.cliente
+    -nom.cliente
+    -loc.cliente
+} 
+
+class pedidos{
+    +nro.pedido
+    -nro.cliente
+    -fecha.pedido
+}
+
+class detalle_pedidos{
+    +nro.pedido
+    +nro.producto
+    -cantidad
+}
+
+proveedores "*"-- componentes
+componentes "*"-- armado
+producto "*"-- armado
+clientes "*"-- pedidos
+pedidos "*"-- detalle_pedidos
+producto "*"-- detalle_pedidos
