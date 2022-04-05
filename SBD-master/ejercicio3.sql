@@ -80,7 +80,10 @@ SELECT p.nom_producto,
 FROM PRODUCTOS p
 	JOIN DETALLE_PEDIDOS dp ON p.nro_producto = dp.nro_producto
 GROUP BY p.nom_producto;
-/*lista de componentes (nro_componente, nom_componente y cantidad que hará falta comprar de cada componente) para fabricar la cantidad faltante de productos que satisfacen los pedidos de los clientes. (Solo se comprará una cantidad determinada de un componente si hace falta fabricar productos que utilicen ese componente y no hay stock suficiente del mismo para fabricar los productos)*/
+/*lista de componentes (nro_componente, nom_componente y cantidad que hará falta comprar de cada componente) 
+para fabricar la cantidad faltante de productos que satisfacen los pedidos de los clientes. (Solo se comprará
+ una cantidad determinada de un componente si hace falta fabricar productos que utilicen ese componente y no hay
+  stock suficiente del mismo para fabricar los productos)*/
 SELECT c.nro_componente,
 	c.nom_componente,
 	SUM(a.cantidad * dp.cantidad) AS cantidad
