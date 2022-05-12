@@ -535,31 +535,25 @@ go
 1. Programar una funcion que devuelva la cantidad de aplazos de un alumno en una materia en SQL.
 */
 
-create function dbo.f_aplazos(@nro_alumno integer, @cod_carrera smallint, @cod_materia char(4))
+create function cant_aplazos(@nro_alumno integer, @cod_carrera smallint, @cod_materia char(4), @anio_cursado smallint)
 returns tinyint
 as
-begin
-	declare @cant_aplazos tinyint;
-	declare @aplazos tinyint;
-	declare @nota_examen tinyint;
 
-	select @aplazos = 0, @cant_aplazos = 0;
-	select @nota_examen = nota_examen from examenes
-	where nro_alumno = @nro_alumno and cod_carrera = @cod_carrera and cod_materia = @cod_materia;
+   declare @cant_aplazos tinyint
+   select @cant_aplazos = count(*)
+   from examenes
+      join carreras c 
+         on e.cod_carrera = c.cod_carrera
+   where e.nota_examen < c.nota_aprobacion
+      and e.nro_alumno = @nro_alumno
+      and e.cod_carrera = @cod_carrera
+      and e.cod_materia = @cod_materia
+      and e.anio_cursado = @anio_cursado
+   return @cant_aplazos
 
-	if(@nota_examen < 5)
-	begin
-		select @aplazos = @aplazos + 1;
-	end
+go 
 
-	select @cant_aplazos = @cant_aplazos + @aplazos;
-
-	if(@cant_aplazos > 3)
-		select @cant_aplazos = 3;
-
-	return @cant_aplazos;
-end
-go
+select cant_aplazos(3,2,'0101',2000)
 
 
 /* 2. Programar una funci�n que devuelva el a�o de vencimiento de la regularidad de una materia para un alumno determinado. 
@@ -593,7 +587,33 @@ go
 
 
 /* 3. Mostrar la lista de materias de la carrera 'CARRERA 1' con la cantidad de alumnos que hayan cursado cada una de ellas 
-   durante el a�o 2000. */
+   durante el anio 2000. */
+
+
+SELECT
+
+	materias.nom_materia AS "Materia",
+	COUNT(examenes.nro_alumno) AS "Cantidad de alumnos"
+
+FROM
+
+	cursados
+
+INNER JOIN materias ON (cursados.cod_materia = materias.cod_materia)
+INNER JOIN examenes ON (cursados.cod_materia = examenes.cod_materia
+							AND cursados.cod_carrera = examenes.cod_carrera
+							AND cursados.nro_alumno = examenes.nro_alumno)
+
+WHERE
+
+	examenes.fecha_examen BETWEEN '20000101' AND '20001231'
+
+GROUP BY
+
+	materias.nom_materia
+
+GO
+
 
 /* 4. Programar una consulta (que utilice las funciones solicitadas) muestre los alumnos que pueden rendir la materia '0102'
    de la carrera 'CARRERA 1' */
